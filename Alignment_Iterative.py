@@ -62,36 +62,59 @@ def score(x,y,match=1,mismatch=-1):
     return prev_row
 
 def Hirschberg(x,y):
-    z = []
-    w = []
-    if not x:
-        for i in range(len(y)):
-            z.append("-")
-            w.append(y[i])
-    elif not y:
-        for i in range(len(x)):
-            z.append(x[i])
-            w.append("-")
-    elif len(x) == 1 or len(y) == 1:
-        return NeedlemanWunsch(x,y,delta_fitting)
-    else:
-        xlen = len(x)
-        xmid = len(x) // 2
-        ylen = len(y)
 
-        ScoreL = np.array(score(x[:xmid], y))
-        ScoreR = score(x[xmid:xlen][::-1], y[::-1])
-        ScoreR.reverse()
-        ScoreR = np.array(ScoreR)
-        ymid = np.argmax(ScoreR + ScoreL)
-        z1,w1 = Hirschberg(x[:xmid], y[:ymid])
-        z2,w2 = Hirschberg(x[xmid: xlen], y[ymid: ylen])
-        z += z1
-        z += z2
-        w += w1
-        w += w2
-        return z,w
-    return z,w
+    result = {}
+    visited = {}
+    stack = [(x,y)]
+    original = (x,y)
+    while stack:
+        top = stack.pop()
+        x,y = top
+        z = []
+        w = []
+        if top not in visited:
+            visited[top] = True
+            if not x:
+                for i in range(len(y)):
+                    z.append("-")
+                    w.append(y[i])
+                result[(x,y)] = [z,w]
+
+            elif not y:
+                for i in range(len(x)):
+                    z.append(x[i])
+                    w.append("-")
+                result[(x, y)] = [z, w]
+            elif len(x) == 1 or len(y) == 1:
+                z,w = NeedlemanWunsch(x,y,delta_fitting)
+                result[(x, y)] = [z, w]
+            else:
+                xlen = len(x)
+                xmid = len(x) // 2
+                ylen = len(y)
+
+                ScoreL = np.array(score(x[:xmid], y))
+                ScoreR = score(x[xmid:xlen][::-1], y[::-1])
+                ScoreR.reverse()
+                ScoreR = np.array(ScoreR)
+                ymid = np.argmax(ScoreR + ScoreL)
+                stack.append(top)
+
+                stack.append((x[xmid: xlen], y[ymid: ylen]))
+                stack.append((x[:xmid], y[:ymid]))
+                visited[top] = [(x[:xmid], y[:ymid]),(x[xmid: xlen], y[ymid: ylen])]
+        else:
+            z1, w1 = result[visited[top][0]]
+            z2, w2 = result[visited[top][1]]
+            z += z1
+            z += z2
+            w += w1
+            w += w2
+            result[top] = [z,w]
+            result.pop(visited[top][0])
+            result.pop(visited[top][1])
+
+    return result[original]
 
 
 UP = (-1,0)
@@ -162,7 +185,7 @@ def NeedlemanWunsch(v, w, delta):
     #         print(M)
     return alignment
 if __name__ == "__main__":
-    v,w = "AGTACGCA","TATGC"
+    v,w = "AGTGCA","TATGC"
 
     ali1,ali2 = Hirschberg(v,w)
     cali1,cali2 = NeedlemanWunsch(v,w,delta_fitting)

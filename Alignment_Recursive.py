@@ -161,13 +161,16 @@ def NeedlemanWunsch(v, w, delta):
     #     for row in M:
     #         print(M)
     return alignment
+import resource
 if __name__ == "__main__":
-    v,w = "AGTACGCA","TATGC"
+    v,w = "AGCGCA","TATGC"
 
     ali1,ali2 = Hirschberg(v,w)
-    cali1,cali2 = NeedlemanWunsch(v,w,delta_fitting)
     print("".join(ali1))
     print("".join(ali2))
+
+    cali1,cali2 = NeedlemanWunsch(v,w,delta_fitting)
     print("".join(cali1))
     print("".join(cali2))
+    print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss /(1024*1024))
     #print(score("aaaaa","baa"))
