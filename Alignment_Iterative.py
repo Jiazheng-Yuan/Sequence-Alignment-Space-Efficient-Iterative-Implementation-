@@ -62,32 +62,36 @@ def score(x,y,match=1,mismatch=-1):
     return prev_row
 
 def Hirschberg(x,y):
-
+    id = 0
+    if len(x) < len(y):
+        x,y = y,x
     result = {}
     visited = {}
-    stack = [(x,y)]
-    original = (x,y)
+    #row_id,col_id = 0,0
+
+    stack = [(x,y,id)]
+    original = (x,y,id)
     while stack:
         top = stack.pop()
-        x,y = top
+        x,y,useless = top
         z = []
         w = []
         if top not in visited:
-            visited[top] = True
+            id += 1
             if not x:
                 for i in range(len(y)):
                     z.append("-")
                     w.append(y[i])
-                result[(x,y)] = [z,w]
+                result[top] = [z,w]
 
             elif not y:
                 for i in range(len(x)):
                     z.append(x[i])
                     w.append("-")
-                result[(x, y)] = [z, w]
+                result[top] = [z, w]
             elif len(x) == 1 or len(y) == 1:
                 z,w = NeedlemanWunsch(x,y,delta_fitting)
-                result[(x, y)] = [z, w]
+                result[top] = [z, w]
             else:
                 xlen = len(x)
                 xmid = len(x) // 2
@@ -98,11 +102,15 @@ def Hirschberg(x,y):
                 ScoreR.reverse()
                 ScoreR = np.array(ScoreR)
                 ymid = np.argmax(ScoreR + ScoreL)
-                stack.append(top)
 
-                stack.append((x[xmid: xlen], y[ymid: ylen]))
-                stack.append((x[:xmid], y[:ymid]))
-                visited[top] = [(x[:xmid], y[:ymid]),(x[xmid: xlen], y[ymid: ylen])]
+                stack.append(top)
+                x1,x2 = x[:xmid],x[xmid: xlen]
+                y1,y2 = y[:ymid],y[ymid: ylen]
+                stack.append((x1, y1, id))
+                id += 1
+                stack.append((x2, y2, id))
+                id += 1
+                visited[top] = [(x1, y1,id - 2),(x2, y2,id - 1)]
         else:
             z1, w1 = result[visited[top][0]]
             z2, w2 = result[visited[top][1]]
@@ -112,7 +120,9 @@ def Hirschberg(x,y):
             w += w2
             result[top] = [z,w]
             result.pop(visited[top][0])
+            #if visited[top][1] in result:
             result.pop(visited[top][1])
+            visited.pop(top)
 
     return result[original]
 
@@ -184,13 +194,36 @@ def NeedlemanWunsch(v, w, delta):
     #     for row in M:
     #         print(M)
     return alignment
-if __name__ == "__main__":
-    v,w = "AGTGCA","TATGC"
+def testcase(filename1="dataset/seq1.txt",filename2="dataset/seq2.txt"):
+    seq1 = open(filename1,"r").readline()
+    seq2 = open(filename2,"r").readline()
+    return seq1,seq2
+import os
 
+def evaluation(st1,st2,delta):
+    total = 0
+    for c1,c2 in zip(st1,st2):
+        total += delta[c1][c2]
+    return total
+import time,resource
+if __name__ == "__main__":
+    #os.system("ls")
+    #v,w = "ATCGAAAAATCG","TATGGGGGATG"
+    #v,w = testcase(filename1="Sequence-Alignment-Space-Efficient-Iterative-Implementation-/dataset/seq1.txt",filename2="Sequence-Alignment-Space-Efficient-Iterative-Implementation-/dataset/seq2.txt")
+    v,w = testcase()
+    st1 = time.time()
     ali1,ali2 = Hirschberg(v,w)
+    st2 = time.time()
+    print(st2 - st1)
+    print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
+    st1 = time.time()
     cali1,cali2 = NeedlemanWunsch(v,w,delta_fitting)
-    print("".join(ali1))
-    print("".join(ali2))
-    print("".join(cali1))
-    print("".join(cali2))
+    st2 = time.time()
+    print(st2 - st1)
+    print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
+    print(evaluation("".join(ali1),"".join(ali2),delta_fitting) == evaluation("".join(cali1),"".join(cali2),delta_fitting))
+    # print("".join(ali1))
+    # print("".join(ali2))
+    # print("".join(cali1))
+    # print("".join(cali2))
     #print(score("aaaaa","baa"))

@@ -131,6 +131,8 @@ def NeedlemanWunsch(v, w, delta):
     :param: w
     :param: delta
     """
+    if len(v) < len(w):
+        v,w = w,v
     M = [[0 for j in range(len(w) + 1)] for i in range(len(v) + 1)]
     pointers = [[ORIGIN for j in range(len(w) + 1)] for i in range(len(v) + 1)]
     score, alignment = None, None
@@ -161,11 +163,27 @@ def NeedlemanWunsch(v, w, delta):
     #     for row in M:
     #         print(M)
     return alignment
+
+def Hirschberg_Entrance(v,w):
+    if len(v) < len(w):
+        v,w = w,v
+    return Hirschberg(v,w)
+def testcase(filename1="dataset/seq1.txt",filename2="dataset/seq2.txt"):
+    seq1 = open(filename1,"r").readline()
+    seq2 = open(filename2,"r").readline()
+    return seq1,seq2
+
+def evaluation(st1,st2,delta):
+    total = 0
+    for c1,c2 in zip(st1,st2):
+        total += delta[c1][c2]
+    return total
 import resource
 if __name__ == "__main__":
     v,w = "AGCGCA","TATGC"
-
-    ali1,ali2 = Hirschberg(v,w)
+    v, w = testcase(filename1="Sequence-Alignment-Space-Efficient-Iterative-Implementation-/dataset/seq1.txt",filename2="Sequence-Alignment-Space-Efficient-Iterative-Implementation-/dataset/seq2.txt")
+    ali1, ali2 = Hirschberg(v, w)
+    ali1,ali2 = Hirschberg_Entrance(v,w)
     print("".join(ali1))
     print("".join(ali2))
 
@@ -173,4 +191,6 @@ if __name__ == "__main__":
     print("".join(cali1))
     print("".join(cali2))
     print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss /(1024*1024))
+    print(evaluation("".join(ali1), "".join(ali2), delta_fitting) == evaluation("".join(cali1), "".join(cali2),
+                                                                                delta_fitting))
     #print(score("aaaaa","baa"))
