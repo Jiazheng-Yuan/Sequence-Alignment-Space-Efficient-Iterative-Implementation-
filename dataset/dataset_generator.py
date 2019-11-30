@@ -14,4 +14,4 @@ def generator(length1,length2,filename1,filename2):
     for c in seq2:
         file.write(c)
 if __name__ == "__main__":
-    generator(20000,20000,"seq1.txt","seq2.txt")
+    generator(40000,40000,"seq1.txt","seq2.txt")
