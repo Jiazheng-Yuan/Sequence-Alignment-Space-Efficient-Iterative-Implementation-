@@ -205,12 +205,13 @@ def evaluation(st1,st2,delta):
     for c1,c2 in zip(st1,st2):
         total += delta[c1][c2]
     return total
-import time,resource
+import time,resource,sys
 if __name__ == "__main__":
     #os.system("ls")
     #v,w = "ATCGAAAAATCG","TATGGGGGATG"
-    #v,w = testcase(filename1="Sequence-Alignment-Space-Efficient-Iterative-Implementation-/dataset/seq1.txt",filename2="Sequence-Alignment-Space-Efficient-Iterative-Implementation-/dataset/seq2.txt")
-    v,w = testcase()
+    filename1,filename2 = sys.argv[1],sys.argv[2]
+    v,w = testcase(filename1="dataset/seq1_size{}.txt".format(filename1),filename2="dataset/seq2_size{}.txt".format(filename2))
+    #v,w = testcase()
     st1 = time.time()
     ali1,ali2 = Hirschberg(v,w)
     st2 = time.time()
