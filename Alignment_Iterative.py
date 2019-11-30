@@ -227,6 +227,8 @@ def test(filename1,filename2):
     # print("".join(ali1))
     print("Finished the performance test for size {} * {}".format(filename1, filename2))
     print("\n\n")
+import os
+import psutil
 
 if __name__ == "__main__":
 
@@ -251,6 +253,8 @@ if __name__ == "__main__":
     # print("".join(cali1))
     # print("".join(cali2))
     # print(score("aaaaa","baa"))
+    process = psutil.Process(os.getpid())
+      # in bytes
     filename1, filename2 = sys.argv[1], sys.argv[2]
     v, w = testcase(filename1="dataset/seq1_size{}.txt".format(filename1),
                     filename2="dataset/seq2_size{}.txt".format(filename2))
@@ -260,12 +264,15 @@ if __name__ == "__main__":
     ali1, ali2 = Hirschberg(v, w)
     st2 = time.time()
     print(st2 - st1)
-    print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
+    #print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
+    #print(process.memory_info())
+    print(process.memory_info().rss / (1024 * 1024))
     st1 = time.time()
     cali1, cali2 = NeedlemanWunsch(v, w, delta_fitting)
     st2 = time.time()
     print(st2 - st1)
-    print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
+    #print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
+    print(process.memory_info().rss / (1024 * 1024))
     print(evaluation("".join(ali1), "".join(ali2), delta_fitting) == evaluation("".join(cali1), "".join(cali2),
                                                                                 delta_fitting))
     # print("".join(ali1))
