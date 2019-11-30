@@ -15,5 +15,6 @@ def generator(length1,length2,filename1,filename2):
         file.write(c)
 import sys
 if __name__ == "__main__":
+
     size1,size2 = int(sys.argv[1]),int(sys.argv[2])
     generator(size1,size2,"seq1_size"+str(size1)+".txt","seq2_size"+str(size2)+".txt")

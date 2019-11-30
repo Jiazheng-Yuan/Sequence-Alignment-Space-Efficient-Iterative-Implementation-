@@ -1,0 +1,14 @@
+ee
+Traceback (most recent call last):
+  File "Alignment_Iterative.py", line 215, in <module>
+    ali1,ali2 = Hirschberg(v,w)
+  File "Alignment_Iterative.py", line 100, in Hirschberg
+    ScoreL = np.array(score(x[:xmid], y))
+  File "Alignment_Iterative.py", line 57, in score
+    cur_row[j] = max(cur_row[j], cur_row[j - 1] + delta_fitting["-"][y[j - 1]])
+KeyboardInterrupt
+6472.554298400879
+0.030193328857421875
+4792.549520969391
+72.22422790527344
+True
