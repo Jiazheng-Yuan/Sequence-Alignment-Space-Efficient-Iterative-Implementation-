@@ -1,52 +1,19 @@
 import numpy as np
+import os
+import psutil
 
-# keys = ['A', 'C', 'T', 'G', '-']
-# delta_fitting = {}
-# for i in range(len(keys)):
-#     delta_fitting[keys[i]] = {k : v for (k,v) in zip(keys, [1 if keys[i] == keys[j]  else -1 for j in range(len(keys))])}
-# delta_fitting['-']['-'] = -1
 keys = ['A', 'C', 'T', 'G']
 delta_fitting = {}
 for i in range(len(keys)):
-    delta_fitting[keys[i]] = {k : v for (k,v) in zip(keys, [3 if keys[i] == keys[j]  else -1 for j in range(len(keys))])}
+    delta_fitting[keys[i]] = {k : v for (k,v) in zip(keys, [3 if keys[i] == keys[j] else -1 for j in range(len(keys))])}
 delta_fitting['-'] = {}
 delta_fitting['-']['-'] = -2
+#delta fitting is the scoring function
+
 for key in keys:
     delta_fitting[key]["-"] = -2
     delta_fitting["-"][key] = -2
-def score(x,y,match=1,mismatch=-1):
-    # if len(x) > len(y):
-    #     x,y = y,x
-    # prev_col = [(i * mismatch) for i in range(len(x) + 1)]
-    # cur_col = [float("-inf")] * (len(x) + 1)
-    #
-    # for j in range(1,len(y) + 1):
-    #     for i in range(0,len(x) + 1):
-    #         if i > 0:
-    #             cur_col[i] = prev_col[i - 1]
-    #             cur_col[i] += match if x[i - 1] == y[j - 1] else mismatch
-    #             cur_col[i] = max(cur_col[i], cur_col[i - 1] + mismatch)
-    #         cur_col[i] = max(cur_col[i],prev_col[i] + mismatch)
-    #
-    #     prev_col = cur_col
-    #     cur_col = [0] * (len(x) + 1)
-    #
-    # return prev_col
-
-    # prev_row = [(i * mismatch) for i in range(len(y) + 1)]
-    # cur_row = [float("-inf")] * (len(y) + 1)
-    # for i in range(1,len(x) + 1):
-    #     for j in range(0,len(y) + 1):
-    #         if j > 0:
-    #             cur_row[j] = prev_row[j - 1]
-    #             cur_row[j] += match if x[i - 1] == y[j - 1] else -1
-    #             cur_row[j] = max(cur_row[j], cur_row[j - 1] + mismatch)
-    #         cur_row[j] = max(cur_row[j],prev_row[j] + mismatch)
-    #
-    #     prev_row = cur_row
-    #     row_row = [float("-inf")] * (len(y) + 1)
-    #
-    # return prev_row
+def score(x,y):
     prev_row = [(i * delta_fitting["-"]["-"]) for i in range(len(y) + 1)]
     cur_row = [float("-inf")] * (len(y) + 1)
     for i in range(1, len(x) + 1):
@@ -67,7 +34,6 @@ def Hirschberg(x,y):
         x,y = y,x
     result = {}
     visited = {}
-    #row_id,col_id = 0,0
 
     stack = [(x,y,id)]
     original = (x,y,id)
@@ -227,8 +193,7 @@ def test(filename1,filename2):
     # print("".join(ali1))
     print("Finished the performance test for size {} * {}".format(filename1, filename2))
     print("\n\n")
-import os
-import psutil
+
 
 if __name__ == "__main__":
 
