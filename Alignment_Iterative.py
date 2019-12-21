@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import psutil
-
+import time,resource,sys
 keys = ['A', 'C', 'T', 'G']
 delta_fitting = {}
 for i in range(len(keys)):
@@ -86,7 +86,7 @@ def Hirschberg(x,y):
             w += w2
             result[top] = [z,w]
             result.pop(visited[top][0])
-            #if visited[top][1] in result:
+
             result.pop(visited[top][1])
             visited.pop(top)
 
@@ -115,24 +115,17 @@ def traceback_global(v, w, pointers):
             new_v.append(v[i - 1])
             new_w.append(w[j - 1])
         i, j = i + di, j + dj
-        if (i <= 0 and j <= 0):
+        if i <= 0 and j <= 0:
             break
 
     return new_v[::-1], new_w[::-1]
 
 
 def NeedlemanWunsch(v, w, delta):
-    """
-    Returns the score of the maximum scoring alignment of the strings v and w, as well as the actual alignment as
-    computed by traceback_global.
 
-    :param: v
-    :param: w
-    :param: delta
-    """
     M = [[0 for j in range(len(w) + 1)] for i in range(len(v) + 1)]
     pointers = [[ORIGIN for j in range(len(w) + 1)] for i in range(len(v) + 1)]
-    score, alignment = None, None
+
     for i in range(1, len(w) + 1):
         M[0][i] += M[0][i - 1] + delta[w[i - 1]]['-']
         pointers[0][i] = LEFT
@@ -153,30 +146,26 @@ def NeedlemanWunsch(v, w, delta):
                 M[i][j] = delta[v[i - 1]][w[j - 1]] + M[i - 1][j - 1]
                 pointers[i][j] = TOPLEFT
 
-    # YOUR CODE HERE
 
     alignment = traceback_global(v, w, pointers)
-    score = M[-1][-1]
-    #     for row in M:
-    #         print(M)
+
     return alignment
 def testcase(filename1="dataset/seq1.txt",filename2="dataset/seq2.txt"):
     seq1 = open(filename1,"r").readline()
     seq2 = open(filename2,"r").readline()
     return seq1,seq2
-import os
 
 def evaluation(st1,st2,delta):
     total = 0
     for c1,c2 in zip(st1,st2):
         total += delta[c1][c2]
     return total
-import time,resource,sys
+
 def test(filename1,filename2):
-    #filename1, filename2 = sys.argv[1], sys.argv[2]
+
     v, w = testcase(filename1="dataset/seq1_size{}.txt".format(filename1),
                     filename2="dataset/seq2_size{}.txt".format(filename2))
-    # v,w = testcase()
+
     print("Following is the performance test for size {} * {}".format(filename1,filename2))
     st1 = time.time()
     ali1, ali2 = Hirschberg(v, w)
@@ -197,49 +186,28 @@ def test(filename1,filename2):
 
 if __name__ == "__main__":
 
-    #os.system("ls")
-    #v,w = "ATCGAAAAATCG","TATGGGGGATG"
-    # filename1,filename2 = sys.argv[1],sys.argv[2]
-    # v,w = testcase(filename1="dataset/seq1_size{}.txt".format(filename1),filename2="dataset/seq2_size{}.txt".format(filename2))
-    # #v,w = testcase()
-    # st1 = time.time()
-    # ali1,ali2 = Hirschberg(v,w)
-    # st2 = time.time()
-    # print(st2 - st1)
-    # print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
-    # st1 = time.time()
-    # cali1,cali2 = NeedlemanWunsch(v,w,delta_fitting)
-    # st2 = time.time()
-    # print(st2 - st1)
-    # print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
-    # print(evaluation("".join(ali1),"".join(ali2),delta_fitting) == evaluation("".join(cali1),"".join(cali2),delta_fitting))
-    # print("".join(ali1))
-    # print("".join(ali2))
-    # print("".join(cali1))
-    # print("".join(cali2))
-    # print(score("aaaaa","baa"))
+
     process = psutil.Process(os.getpid())
-      # in bytes
+
     filename1, filename2 = sys.argv[1], sys.argv[2]
     v, w = testcase(filename1="dataset/seq1_size{}.txt".format(filename1),
                     filename2="dataset/seq2_size{}.txt".format(filename2))
-    # v,w = testcase()
+
     print("Following is the performance test for size {} * {}".format(filename1, filename2))
     st1 = time.time()
     ali1, ali2 = Hirschberg(v, w)
     st2 = time.time()
     print(st2 - st1)
-    #print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
-    #print(process.memory_info())
+
     print(process.memory_info().rss / (1024 * 1024))
     st1 = time.time()
     cali1, cali2 = NeedlemanWunsch(v, w, delta_fitting)
     st2 = time.time()
     print(st2 - st1)
-    #print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024))
+
     print(process.memory_info().rss / (1024 * 1024))
     print(evaluation("".join(ali1), "".join(ali2), delta_fitting) == evaluation("".join(cali1), "".join(cali2),
                                                                                 delta_fitting))
-    # print("".join(ali1))
+
     print("Finished the performance test for size {} * {}".format(filename1, filename2))
     print("\n\n")
