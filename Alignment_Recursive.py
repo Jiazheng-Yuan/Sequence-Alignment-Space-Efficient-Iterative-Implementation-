@@ -149,16 +149,22 @@ if __name__ == "__main__":
     st1 = time.time()
     ali1, ali2 = Hirschberg_Entrance(v, w)
     st2 = time.time()
-    print(st2 - st1)
+    print("Hirschberg Performance:")
+    print("time usage: {} s".format(st2 - st1))
+    print("memory usage: {} MB(unit might change with system, MB for mac OS)".format(process.memory_info().rss / (1024 * 1024)))
 
     st1 = time.time()
     cali1, cali2 = NeedlemanWunsch(v, w, delta_fitting)
     st2 = time.time()
-    print(st2 - st1)
+    print("NeedlemanWunsch Performance:")
+    print("time usage: {} s".format(st2 - st1))
 
-    print(process.memory_info().rss / (1024 * 1024))
-    print(evaluation("".join(ali1), "".join(ali2), delta_fitting) == evaluation("".join(cali1), "".join(cali2),
-                                                                                delta_fitting))
+    print("memory usage: {} MB(unit might change with system, MB for mac OS)".format(
+        process.memory_info().rss / (1024 * 1024)))
+    if evaluation("".join(ali1), "".join(ali2), delta_fitting) == evaluation("".join(cali1), "".join(cali2),delta_fitting):
+        print("Hirschberg returned optimal alignment")
+    else:
+        print("Hirschberg returned an alignment which has a score different from the one by NeedlemanWunsch")
     # print("".join(ali1))
     print("Finished the performance test for size {} * {}".format(filename1, filename2))
     print("\n\n")
