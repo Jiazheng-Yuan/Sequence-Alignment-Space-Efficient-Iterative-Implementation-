@@ -134,6 +134,7 @@ def testcase(filename1="dataset/seq1.txt",filename2="dataset/seq2.txt"):
 
 def evaluation(st1,st2,delta):
     total = 0
+
     for c1,c2 in zip(st1,st2):
         total += delta[c1][c2]
     return total
@@ -161,7 +162,8 @@ if __name__ == "__main__":
 
     print("memory usage: {} MB(unit might change with system, MB for mac OS)".format(
         process.memory_info().rss / (1024 * 1024)))
-    if evaluation("".join(ali1), "".join(ali2), delta_fitting) == evaluation("".join(cali1), "".join(cali2),delta_fitting):
+    if evaluation("".join(ali1), "".join(ali2), delta_fitting) == evaluation("".join(cali1), "".join(cali2),delta_fitting) and len(ali1) == len(cali1):
+
         print("Hirschberg returned optimal alignment")
     else:
         print("Hirschberg returned an alignment which has a score different from the one by NeedlemanWunsch")
